@@ -84,16 +84,16 @@ IMPORTANT FORMATTING RULES:
 - Use short date format: 30.11.2025 instead of "30. november 2025"
 - Add a summary line at the end (e.g., "Kokku: 7 ülesannet")
 - ALWAYS add clickable links using this format: [Title](URL)
-  * Tasks: [Task name](http://localhost:8001/tasks/{id})
-  * Clients: [Client name](http://localhost:8001/clients/{id})
-  * Deals: [Deal name](http://localhost:8001/deals/{id})
-  * Quotations: [Quotation title](http://localhost:8001/quotations/{id})
+  * Tasks: [Task name](http://45.93.139.96:8082/tasks/{id})
+  * Clients: [Client name](http://45.93.139.96:8082/clients/{id})
+  * Deals: [Deal name](http://45.93.139.96:8082/deals/{id})
+  * Quotations: [Quotation title](45.93.139.96:8082/quotations/{id})
 
 Example good format:
 📋 Ülesanded (5 näidatud):
-• [Test](http://localhost:8001/tasks/7) - ootel, 40€
-• [Finnair projekt](http://localhost:8001/tasks/6) - ootel, tähtaeg 30.11.2025, 40€
-• [Veel ülesanne](http://localhost:8001/tasks/4) - ootel, 12€
+• [Test](http://45.93.139.96:8082/tasks/7) - ootel, 40€
+• [Finnair projekt](http://45.93.139.96:8082/tasks/6) - ootel, tähtaeg 30.11.2025, 40€
+• [Veel ülesanne](http://45.93.139.96:8082/tasks/4) - ootel, 12€
 
 Kokku: 7 ülesannet'
             ],

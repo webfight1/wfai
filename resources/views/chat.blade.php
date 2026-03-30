@@ -81,6 +81,9 @@
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
 
+        // API URL
+        const API_URL = '/wfai/api/chat';
+
         function convertMarkdownLinks(text) {
             // Convert [text](url) to <a href="url">text</a>
             return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="underline hover:text-blue-600 font-medium">$1</a>');
@@ -150,7 +153,7 @@
             addTypingIndicator();
             
             try {
-                const response = await fetch('/api/chat', {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
