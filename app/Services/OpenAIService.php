@@ -14,7 +14,7 @@ class OpenAIService
     public function __construct(CRMService $crmService)
     {
         $this->apiKey = config('services.openai.api_key');
-        $this->model = config('services.openai.model', 'gpt-4o-mini');
+        $this->model = config('services.openai.model', 'gpt-4o');
         $this->crmService = $crmService;
     }
 
@@ -84,7 +84,7 @@ IMPORTANT FORMATTING RULES:
 - Add a summary line at the end (e.g., "Kokku: 7 ülesannet")
 - ALWAYS add clickable links using this format: [Title](URL)
   * Tasks: [Task name](http://45.93.139.96:8082/tasks/{id})
-  * Clients: [Client name](http://45.93.139.96:8082/clients/{id})
+  * Clients: [Client name](http://45.93.139.96:8082/customers/{id})
   * Deals: [Deal name](http://45.93.139.96:8082/deals/{id})
   * Quotations: [Quotation title](45.93.139.96:8082/quotations/{id})
 
