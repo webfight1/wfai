@@ -99,9 +99,9 @@ DEFAULT TASK DISPLAY RULES:
 
 Example good format:
 📋 Ülesanded (5 näidatud):
-• [Test](http://45.93.139.96:8082/tasks/7) - ootel, 40€
-• [Finnair projekt](http://45.93.139.96:8082/tasks/6) - ootel, tähtaeg 30.11.2025, 40€
-• [Veel ülesanne](http://45.93.139.96:8082/tasks/4) - ootel, 12€
+• [Test](http://45.93.139.96:8082/tasks/7) ID: 7 - ootel, 40€
+• [Finnair projekt](http://45.93.139.96:8082/tasks/6) ID: 6 - ootel, tähtaeg 30.11.2025, 40€
+• [Veel ülesanne](http://45.93.139.96:8082/tasks/4) ID: 4 - ootel, 12€
 
 Kokku: 7 ülesannet'
             ],
