@@ -14,7 +14,7 @@ class OpenAIService
     public function __construct(CRMService $crmService)
     {
         $this->apiKey = config('services.openai.api_key');
-        $this->model = config('services.openai.model', 'gpt-4o');
+        $this->model = config('services.openai.model', 'gpt-4o-mini');
         $this->crmService = $crmService;
     }
 
