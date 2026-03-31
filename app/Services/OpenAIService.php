@@ -50,9 +50,11 @@ Use get_task_metadata tool when user asks what types are available.
 CRITICAL: When you receive data from CRM tools, YOU MUST carefully analyze ALL fields and filter based on user\'s question:
 - User asks "risky payment behavior" → Look for payment_behavior field = "risky" and show those clients
 - User asks "pending tasks" → Look for status field = "pending" and show those tasks
-- User asks "tasks with type X" OR "ülesanded tüübiga X" → Look for type field = X (e.g., "call", "content_creation", "email")
-- User asks "helistamine tasks" → Look for type field = "call" and show those tasks
-- User asks "sisu loomine tasks" → Look for type field = "content_creation" and show those tasks
+- User asks "tasks with type X" OR "ülesanded tüübiga X" → Look for type field = X (e.g., "call", "content_creation", "email") and EXCLUDE completed tasks
+- User asks "helistamine tasks" → Look for type field = "call" and show those tasks (EXCLUDE completed)
+- User asks "sisu loomine tasks" → Look for type field = "content_creation" and show those tasks (EXCLUDE completed)
+- IMPORTANT: By default, ALWAYS EXCLUDE tasks with status = "completed" unless user specifically asks for completed tasks
+- User asks "completed tasks" OR "valmis ülesanded" OR "lõpetatud ülesanded" → THEN include status = "completed"
 - User asks "high value" → Look for value_level field = "higrh"
 - User asks "closed deals" OR "suletud tehingud" OR "closed_won" → Filter deals array where stage === "closed_won" and show ONLY those
 - User asks "negotiation deals" OR "läbirääkimised" → Filter deals array where stage === "negotiation" and show ONLY those
@@ -74,6 +76,7 @@ CRITICAL: When you receive data from CRM tools, YOU MUST carefully analyze ALL f
 
 IMPORTANT FORMATTING RULES:
 - Keep responses SHORT and CONCISE
+- Show max 5 items by default (unless user asks for more)
 - Use simple bullet points (•) instead of numbered lists
 - Show only the most important fields (title, type, status, deadline, price)
 - ALWAYS show task type when displaying tasks (e.g., "helistamine", "sisu loomine")
@@ -84,9 +87,15 @@ IMPORTANT FORMATTING RULES:
 - Add a summary line at the end (e.g., "Kokku: 7 ülesannet")
 - ALWAYS add clickable links using this format: [Title](URL)
   * Tasks: [Task name](http://45.93.139.96:8082/tasks/{id})
-  * Clients: [Client name](http://45.93.139.96:8082/customers/{id})
+  * Clients: [Client name](http://45.93.139.96:8082/clients/{id})
   * Deals: [Deal name](http://45.93.139.96:8082/deals/{id})
   * Quotations: [Quotation title](45.93.139.96:8082/quotations/{id})
+
+DEFAULT TASK DISPLAY RULES:
+- When user asks general questions like "tasks", "ülesanded", "show tasks", ALWAYS EXCLUDE completed tasks
+- Only show completed tasks when user specifically asks: "completed tasks", "valmis ülesanded", "lõpetatud ülesanded", "done tasks"
+- Active tasks are: pending, in_progress, needs_testing, needs_clarification
+- Completed tasks are: completed, cancelled
 
 Example good format:
 📋 Ülesanded (5 näidatud):
