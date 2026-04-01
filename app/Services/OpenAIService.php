@@ -92,7 +92,7 @@ IMPORTANT FORMATTING RULES:
   * Quotations: [Quotation title](45.93.139.96:8082/quotations/{id})
 
 DEFAULT TASK DISPLAY RULES:
-- When user asks general questions like "tasks", "anna mulle x viimast taski", "ülesanded", "show tasks", ALWAYS EXCLUDE completed (lõpetatud, valmis) tasks
+- When user asks general questions like "tasks", "anna mulle N viimast taski", "ülesanded", "show tasks", ALWAYS EXCLUDE completed (lõpetatud, valmis) tasks
 - Only show completed tasks when user specifically asks: "completed tasks", "valmis ülesanded", "lõpetatud ülesanded", "done tasks"
 - Active tasks are: pending, in_progress, needs_testing, needs_clarification
 - Completed tasks are: completed, cancelled
