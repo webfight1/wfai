@@ -1,22 +1,22 @@
-    <?php
+<?php
 
-    namespace App\Services;
+namespace App\Services;
 
-    use Illuminate\Support\Facades\Http;
-    use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
-    class OpenAIService
+class OpenAIService
+{
+    private string $apiKey;
+    private string $model;
+    private CRMService $crmService;
+
+    public function __construct(CRMService $crmService)
     {
-        private string $apiKey;
-        private string $model;
-        private CRMService $crmService;
-
-        public function __construct(CRMService $crmService)
-        {
-            $this->apiKey = config('services.openai.api_key');
-            $this->model = config('services.openai.model', 'gpt-4o-mini');
-            $this->crmService = $crmService;
-        }
+        $this->apiKey = config('services.openai.api_key');
+        $this->model = config('services.openai.model', 'gpt-4o-mini');
+        $this->crmService = $crmService;
+    }
 
         public function chat(string $userMessage): array
         {
