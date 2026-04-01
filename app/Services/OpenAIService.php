@@ -100,9 +100,10 @@ class OpenAIService
     - Completed tasks are: completed, cancelled
 
     DEFAULT DEAL DISPLAY RULES:
-    - When user asks general questions like "deals", "tehingud", "show deals", ALWAYS EXCLUDE deals with stage = "closed_won", "closed_lost", "cancelled"
-    - Only show closed deals when user specifically asks: "closed deals", "suletud tehingud"
-    - Active deals are: lead, qualified, proposal, negotiation
+    - When user asks for deals WITHOUT specifying stage, ALWAYS EXCLUDE closed deals (stage = "closed_won", "closed_lost", "cancelled", "arveldatud", "valmis")
+    - Only show closed deals when user SPECIFICALLY asks: "closed deals", "suletud tehingud", "võidetud tehingud", "kaotatud tehingud"
+    - Active deals (show by default): lead, qualified, proposal, negotiation
+    - Closed deals (exclude by default): closed_won, closed_lost, cancelled, arveldatud, valmis
 
     Example good format:
     📋 Ülesanded (5 näidatud):
