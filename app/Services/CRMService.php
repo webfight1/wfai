@@ -19,6 +19,11 @@ class CRMService
     public function getTasks(array $params = []): array
     {
         try {
+            // Always set a high limit to prevent API default limit of 3
+            if (!isset($params['limit'])) {
+                $params['limit'] = 100;
+            }
+
             $response = Http::withToken($this->token)
                 ->get("{$this->baseUrl}/api/tasks", $this->filterParams($params));
 
