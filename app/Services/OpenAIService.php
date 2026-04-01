@@ -77,7 +77,7 @@ CRITICAL: When you receive data from CRM tools, YOU MUST carefully analyze ALL f
 
 IMPORTANT FORMATTING RULES:
 - Keep responses SHORT and CONCISE
-- Show all items unless user asks to limit or there are too many (then show max 10)
+- Show EXACTLY the number of items user asks for (e.g., if user asks for 36, show 36). If no specific number given and there are too many items, then show max 10
 - Use simple bullet points (•) instead of numbered lists
 - Show only the most important fields (title, type, status, deadline, price)
 - ALWAYS show task type when displaying tasks (e.g., "helistamine", "sisu loomine")
