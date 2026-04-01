@@ -53,7 +53,7 @@ CRITICAL: When you receive data from CRM tools, YOU MUST carefully analyze ALL f
 - User asks "tasks with type X" OR "ülesanded tüübiga X" → Look for type field = X (e.g., "call", "content_creation", "email") and EXCLUDE completed tasks
 - User asks "helistamine tasks" → Look for type field = "call" and show those tasks (EXCLUDE completed)
 - User asks "sisu loomine tasks" → Look for type field = "content_creation" and show those tasks (EXCLUDE completed)
-- User asks "last N tasks" OR "N viimast ülesannet" → Sort by latest and include ONLY active tasks (pending, in_progress, needs_testing, needs_clarification). Do NOT include completed/cancelled unless user explicitly asks for completed ones.
+- User asks "last N tasks" OR "N viimast ülesannet" → Get at least 20 tasks (or all), sort by latest, filter out completed/cancelled, then show the first N active tasks. If fewer than N active tasks exist, show all active tasks and report the actual count correctly.
 - IMPORTANT: By default, ALWAYS EXCLUDE tasks with status = "completed" unless user specifically asks for completed tasks
 - User asks "completed tasks" OR "valmis ülesanded" OR "lõpetatud ülesanded" → THEN include status = "completed"
 - User asks "high value" → Look for value_level field = "higrh"
