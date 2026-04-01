@@ -1,0 +1,106 @@
+TABLE: companies
+- id
+- name
+- status (active, inactive, prospect)
+- industry
+- employee_count
+- annual_revenue
+- country
+- created_at
+
+TABLE: customers
+- id
+- first_name
+- last_name
+- email
+- phone
+- status (active, inactive, prospect)
+- client_attribute (kuldklient, hõbe, tavaline)
+- payment_behavior (fast, normal, slow, risky)
+- clarity_level
+- cooperation_level (easy, normal, difficult)
+- value_level (high, medium, low)
+- revenue_type (hourly_partner, project, retainer, one_time)
+- company_id
+- created_at
+
+TABLE: deals
+- id
+- title
+- value
+- stage (lead, qualified, proposal, negotiation, closed_won, closed_lost, töös, tühistatud, valmis, arveldatud)
+- probability
+- expected_close_date
+- actual_close_date
+- clarity_level
+- revenue_model
+- estimated_hours
+- work_type
+- risk_level
+- is_fast_cash
+- customer_id
+- company_id
+- created_at
+
+TABLE: quotations
+- id
+- number
+- title
+- total
+- status (draft, sent, accepted, rejected, expired)
+- valid_until
+- deal_id
+- created_at
+
+TABLE: quotation_items
+- id
+- quotation_id
+- description
+- quantity
+- unit_price
+- subtotal
+
+TABLE: tasks
+- id
+- title
+- type
+- status
+- priority
+- due_date
+- completed_at
+- work_type
+- clarity_level
+- revenue_model
+- cashflow_speed
+- risk_level
+- estimated_hours
+- value_score
+- cashflow_score
+- is_quick_win
+- is_blocking
+- deal_id
+- customer_id
+- company_id
+- user_id
+- assignee_id
+- price
+- created_at
+
+TABLE: time_entries
+- id
+- task_id
+- user_id
+- duration (hours)
+- start_time
+- end_time
+
+RELATIONS:
+- customers.company_id → companies.id
+- deals.customer_id → customers.id
+- deals.company_id → companies.id
+- quotations.deal_id → deals.id
+- quotation_items.quotation_id → quotations.id
+- tasks.deal_id → deals.id
+- tasks.customer_id → customers.id
+- tasks.company_id → companies.id
+- time_entries.task_id → tasks.id

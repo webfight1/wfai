@@ -23,95 +23,48 @@ class OpenAIService
             $messages = [
                 [
                     'role' => 'system',
-                    'content' => 'You are a CRM assistant. You DO NOT write SQL. You MUST use provided tools. Deals mean projects in CRM context. Answer in Estonian.
+                    'content' => 'You are a professional CRM assistant. You work with a structured CRM system that includes companies, customers, deals, quotations, tasks, and time_entries. You have access to tools that return REAL data from the CRM.
 
-    CRM has these options:
-    - Task types: call (helistamine), email, meeting (kohtumine), follow_up (jätkamine), development (arendus), bug_fix (vea parandus), content_creation (sisu loomine), proposal_creation (pakkumise loomine), testing (testimine), other (muu)
-    - Task priorities: low (madal), medium (keskmine), high (kõrge), urgent (kiire)
-    - Task clarity level: clear (selge), medium (keskmine), vague (ebaselge)
-    - Task revenue model: hourly_partner (🔥 Tunnitasu partner), fixed_project (Fikseeritud projekt), retainer (püsiklient), internal (sisemine), uncertain (ebaselge)
-    - Task work type: technical (tehniline), design (disain), copywriting (kopeerimine), marketing (turundus), ecommerce (e-poe), website (veebileht), project (projekt), maintenance (hooldus), other (muu)    
-    - Task cash flow: fast (kiire), medium (keskmine), slow (🐌 Aeglane)
-    - Task risk level: low (madal), medium (keskmine), high (⚠️ Kõrge)
-    - Task is quick win: true (kiire võit, kiiresti tehtav), false (ei ole kiire võit)
-    - Task is blocking: true (blokeerib, paneb projekti toppama), false (ei blokeeri)
-    - Statuses: pending (ootel), in_progress (töös), completed (valmis), cancelled (tühistatud), needs_testing (vajab testimist), needs_clarification (vajab täpsustamist)
-    - Deal stages: lead (potensiaalne klient), qualified (Kvalifitseeritud), proposal (Pakkumine), negotiation (Läbirääkimised), closed_won (võidetud), closed_lost (kaotatud), cancelled (tühistatud), arveldatud (arveldatud), valmis (valmis)
-    - Deal clarity level: clear (selge), medium (keskmine), vague (ebaselge)
-    - Deal work type: technical (tehniline), design (disain), copywriting (tekstitöö), marketing (turundus), ecommerce (e-pood), website (veebileht), project (projekt), maintenance (hooldus), other (muu)
-    - Deal risk level: low (madal), medium (keskmine), high (⚠️ Kõrge)
-    - Deal is fast cash : kiire raha (easy money) (true/false)
-    - Deal expected close date - eeldatav sulgemise kuupäev
-    - Deal actual close date - tegelik sulgemise kuupäev
-    - Quotation statuses: draft (mustand), sent (saadetud), accepted (aktsepteeritud), rejected (tagasi lükatud), expired (aegunud)
-    When user asks in Estonian (e.g., "helistamine", "sisu loomine"), translate to English field value (e.g., "call", "content_creation").
-    Use get_task_metadata tool when user asks what types are available.
+CRITICAL RULES:
+1. You MUST use tools for ALL data-related queries.
+2. You MUST NOT calculate, filter, or guess data manually.
+3. You MUST NOT reduce results after receiving them.
+4. The backend ALWAYS returns correct, filtered, and complete data.
+5. NEVER modify counts or remove items yourself.
 
-    CRITICAL: When you receive data from CRM tools, YOU MUST carefully analyze ALL fields and filter based on user\'s question:
-    - User asks "risky payment behavior" → Look for payment_behavior field = "risky" and show those clients
-    - User asks "pending tasks" → Look for status field = "pending" and show those tasks
-    - User asks "tasks with type X" OR "ülesanded tüübiga X" → Look for type field = X (e.g., "call", "content_creation", "email") and EXCLUDE completed tasks
-    - User asks "helistamine tasks" → Look for type field = "call" and show those tasks (EXCLUDE completed)
-    - User asks "sisu loomine tasks" → Look for type field = "content_creation" and show those tasks (EXCLUDE completed)
-    - User asks "last N tasks" OR "N viimast ülesannet" → Get at least 20 tasks (or all), sort by latest, filter out completed/cancelled, then show the first N active tasks. If fewer than N active tasks exist, show all active tasks and report the actual count correctly.
-    - IMPORTANT: By default, ALWAYS EXCLUDE tasks with status = "completed" unless user specifically asks for completed tasks
-    - User asks "completed tasks" OR "valmis ülesanded" OR "lõpetatud ülesanded" → THEN include status = "completed"
-    - User asks "high value" → Look for value_level field = "higrh"
-    - User asks "closed deals" OR "suletud tehingud" OR "closed_won" → Filter deals array where stage === "closed_won" and show ONLY those
-    - User asks "negotiation deals" OR "läbirääkimised" → Filter deals array where stage === "negotiation" and show ONLY those
-    - For deals: stage field can be "closed_won", "negotiation", "lead", etc.
-    - CRITICAL: When filtering deals by stage, you MUST check each deal\'s stage field and only show matching ones
-    - User asks "time spent on [task name]" OR "ajakulu [task name]" OR "[task name] - palju aega kulus" → Use get_task_time_by_name with the task name
-    - IMPORTANT: When user asks about time spent on a task BY NAME (not ID), use get_task_time_by_name tool
-    - Example: "Mingi ülesanne - palju aega kulus?" → Call get_task_time_by_name(task_name="Mingi ülesanne")
-    - If user provides task ID directly, use get_time_entries with task_id
-    - User asks "accepted quotations" OR "aktsepteeritud pakkumised" → Filter quotations where status === "accepted"
-    - For quotations: status field can be "draft", "sent", "accepted", "rejected", "expired"
-    - User asks "client ID 1" → Find the client where id field equals 1 and show ONLY that client
-    - User asks "klient ID-ga 1" → Find the client where id field equals 1 and show ONLY that client
-    - User asks "ID 1" → Find the client where id field equals 1 and show ONLY that client
-    - ALWAYS check the "id" field for exact numeric matching
-    - ALWAYS examine the actual data structure and field values
-    - If you find matching items, SHOW THEM - do not say "not found" if data exists
-    - The CRM returns real data - trust it and analyze it properly
+If backend returns 5 items → you show 5 items.
 
-    IMPORTANT FORMATTING RULES:
-    - Keep responses SHORT and CONCISE
-    - Show EXACTLY the number of items user asks for (e.g., if user asks for X, show X). If no specific number given and there are too many items, then show max 50
-    - Use simple bullet points (•) instead of numbered lists
-    - Show only the most important fields (title, type, status, deadline, price)
-    - ALWAYS show task type when displaying tasks (e.g., "helistamine", "sisu loomine")
-    - Skip empty fields
-    - Use emojis for better readability: 📋 tasks, 👤 clients, 💼 deals, ⏱️ time entries, 📄 quotations
-    - Format prices clearly: 40€ instead of 40.00
-    - Use short date format: 30.11.2025 instead of "30. november 2025"
-    - CRITICAL: The number in the header "(X näidatud)" MUST match the actual number of items shown in the bullet list. If you filter out completed tasks, adjust the count accordingly.
-    - Example: If user asks for 20 tasks but only 10 are active after filtering, show: "📋 Ülesanded (10 näidatud)" and "Kokku: 10 ülesannet"
-    - ALWAYS add clickable links using this format: [Title](URL)
-    * Tasks: [Task name](http://45.93.139.96:8082/tasks/{id})
-    * Clients: [Client name](http://45.93.139.96:8082/clients/{id})
-    * Deals: [Deal name](http://45.93.139.96:8082/deals/{id})
-    * Quotations: [Quotation title](45.93.139.96:8082/quotations/{id})
+DEFAULT BEHAVIOR (backend handles these automatically):
+- Tasks: By default exclude completed/cancelled. Active = pending, in_progress, needs_testing, needs_clarification
+- Deals: By default exclude closed_won, closed_lost, cancelled. Active = lead, qualified, proposal, negotiation
+- Clients: Can be filtered by payment_behavior (fast, normal, slow, risky), value_level (high, medium, low), status (active, inactive, prospect)
 
-    DEFAULT TASK DISPLAY RULES:
-    - When user asks general questions like "tasks", "anna mulle N viimast taski", "ülesanded", "show tasks", ALWAYS EXCLUDE completed (lõpetatud, valmis) tasks
-    - Only show completed tasks when user specifically asks: "completed tasks", "valmis ülesanded", "lõpetatud ülesanded", "done tasks"
-    - Active tasks are: pending, in_progress, needs_testing, needs_clarification
-    - Completed tasks are: completed, cancelled
+USER INTENT → TOOL PARAMETERS:
+- "anna mulle 5 viimast taski" → use get_tasks with limit=5
+- "aktiivsed taskid" → use get_tasks with exclude_completed=true
+- "valmis taskid" → use get_tasks with status=completed
+- "helistamise taskid" → use get_tasks with type=call
+- "closed deals" → use get_deals with stage=closed_won
+- "läbirääkimised" → use get_deals with stage=negotiation
+- "risky kliendid" → use get_clients with payment_behavior=risky
+- "kõrge väärtusega kliendid" → use get_clients with value_level=high
 
-    DEFAULT DEAL DISPLAY RULES:
-    - When user asks for deals WITHOUT specifying stage, ALWAYS EXCLUDE closed deals (stage = "closed_won", "closed_lost", "cancelled", "arveldatud", "valmis")
-    - Only show closed deals when user SPECIFICALLY asks: "closed deals", "suletud tehingud", "võidetud tehingud", "kaotatud tehingud"
-    - Active deals (show by default): lead, qualified, proposal, negotiation
-    - Closed deals (exclude by default): closed_won, closed_lost, cancelled, arveldatud, valmis
+RESPONSE FORMAT:
+- Keep responses SHORT and CLEAR
+- Use bullet points (•)
+- Show ONLY important fields: title, status/stage, type, price/value, deadline
+- Always format prices: 40€ (not 40.00)
+- Always show count: 📋 Ülesanded (5 näidatud)
+- If backend returns fewer items than requested, show actual number
 
-    Example good format:
-    📋 Ülesanded (5 näidatud):
-    • [Test](http://45.93.139.96:8082/tasks/7) ID: 7 - ootel, 40€
-    • [Finnair projekt](http://45.93.139.96:8082/tasks/6) ID: 6 - ootel, tähtaeg 30.11.2025, 40€
-    • [Veel ülesanne](http://45.93.139.96:8082/tasks/4) ID: 4 - ootel, 12€
+LINK FORMAT (always clickable):
+Tasks: [Task name](http://45.93.139.96:8082/tasks/{id})
+Deals: [Deal name](http://45.93.139.96:8082/deals/{id})
+Clients: [Client name](http://45.93.139.96:8082/clients/{id})
+Quotations: [Quotation title](http://45.93.139.96:8082/quotations/{id})
 
-    Kokku: 7 ülesannet'
+IMPORTANT:
+You are NOT a database. You are NOT doing calculations. You are an interpreter of user intent, a caller of backend tools, a formatter of results. Backend = brain, You = interface.'
                 ],
                 [
                     'role' => 'user',
@@ -182,10 +135,25 @@ class OpenAIService
 
         private function executeToolCall(string $functionName, array $arguments): array
         {
+            // Check if we need to use filtered methods
+            $taskFilters = ['type', 'exclude_completed', 'is_quick_win', 'is_blocking', 'work_type', 'risk_level'];
+            $clientFilters = ['payment_behavior', 'value_level', 'client_attribute', 'cooperation_level'];
+            $dealFilters = ['stage', 'is_fast_cash', 'risk_level', 'clarity_level', 'work_type'];
+            
+            $hasTaskFilter = !empty(array_intersect(array_keys($arguments), $taskFilters));
+            $hasClientFilter = !empty(array_intersect(array_keys($arguments), $clientFilters));
+            $hasDealFilter = !empty(array_intersect(array_keys($arguments), $dealFilters));
+            
             return match ($functionName) {
-                'get_tasks' => $this->crmService->getTasks($arguments),
-                'get_clients' => $this->crmService->getClients($arguments),
-                'get_deals' => $this->crmService->getDeals($arguments),
+                'get_tasks' => $hasTaskFilter 
+                    ? $this->crmService->getTasksFiltered($arguments)
+                    : $this->crmService->getTasks($arguments),
+                'get_clients' => $hasClientFilter 
+                    ? $this->crmService->getClientsFiltered($arguments)
+                    : $this->crmService->getClients($arguments),
+                'get_deals' => $hasDealFilter 
+                    ? $this->crmService->getDealsFiltered($arguments)
+                    : $this->crmService->getDeals($arguments),
                 'get_time_entries' => $this->crmService->getTimeEntries($arguments),
                 'get_quotations' => $this->crmService->getQuotations($arguments),
                 'get_quotation_items' => $this->crmService->getQuotationItems($arguments),
@@ -225,17 +193,41 @@ class OpenAIService
                     'type' => 'function',
                     'function' => [
                         'name' => 'get_tasks',
-                        'description' => 'Get tasks from CRM. Use this to retrieve task information.',
+                        'description' => 'Get tasks from CRM with optional filtering. Backend filters and returns only matching results.',
                         'parameters' => [
                             'type' => 'object',
                             'properties' => [
+                                'type' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by task type: call, email, meeting, follow_up, development, bug_fix, content_creation, proposal_creation, testing, other'
+                                ],
                                 'status' => [
                                     'type' => 'string',
-                                    'description' => 'Filter tasks by status (e.g., pending, completed)'
+                                    'description' => 'Filter by status: pending, in_progress, completed, cancelled, needs_testing, needs_clarification'
+                                ],
+                                'exclude_completed' => [
+                                    'type' => 'boolean',
+                                    'description' => 'If true, exclude completed and cancelled tasks. Use for "aktiivsed taskid" queries.'
+                                ],
+                                'is_quick_win' => [
+                                    'type' => 'boolean',
+                                    'description' => 'Filter by is_quick_win flag (true/false)'
+                                ],
+                                'is_blocking' => [
+                                    'type' => 'boolean',
+                                    'description' => 'Filter by is_blocking flag (true/false)'
+                                ],
+                                'work_type' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by work_type: technical, design, copywriting, marketing, ecommerce, website, project, maintenance, other'
+                                ],
+                                'risk_level' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by risk_level: low, medium, high'
                                 ],
                                 'limit' => [
                                     'type' => 'number',
-                                    'description' => 'Maximum number of tasks to return'
+                                    'description' => 'Maximum number of tasks to return (e.g., 5 for "5 viimast")'
                                 ]
                             ]
                         ]
@@ -245,13 +237,33 @@ class OpenAIService
                     'type' => 'function',
                     'function' => [
                         'name' => 'get_clients',
-                        'description' => 'Get ALL clients from CRM. Returns array of clients with fields: id, first_name, last_name, email, phone, status, payment_behavior (e.g. "risky"), client_attribute, value_level, etc. You MUST filter the results yourself based on user query after receiving the data.',
+                        'description' => 'Get clients from CRM with optional filtering. Backend filters and returns only matching results.',
                         'parameters' => [
                             'type' => 'object',
                             'properties' => [
                                 'search' => [
                                     'type' => 'string',
                                     'description' => 'Search term to filter clients by name'
+                                ],
+                                'payment_behavior' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by payment behavior: fast, normal, slow, risky'
+                                ],
+                                'value_level' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by value level: high, medium, low'
+                                ],
+                                'client_attribute' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by client attribute: kuldklient, hõbe, tavaline'
+                                ],
+                                'cooperation_level' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by cooperation level: easy, normal, difficult'
+                                ],
+                                'status' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by status: active, inactive, prospect'
                                 ],
                                 'limit' => [
                                     'type' => 'number',
@@ -265,10 +277,30 @@ class OpenAIService
                     'type' => 'function',
                     'function' => [
                         'name' => 'get_deals',
-                        'description' => 'Get ALL deals from CRM. Returns array of deals with fields: id, title, value, stage (e.g. "closed_won", "negotiation", "lead"), expected_close_date, customer_id, etc. You MUST filter the results yourself based on user query after receiving the data.',
+                        'description' => 'Get deals from CRM with optional filtering. Backend filters and returns only matching results.',
                         'parameters' => [
                             'type' => 'object',
                             'properties' => [
+                                'stage' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by stage: lead, qualified, proposal, negotiation, closed_won, closed_lost, cancelled, arveldatud, valmis'
+                                ],
+                                'is_fast_cash' => [
+                                    'type' => 'boolean',
+                                    'description' => 'Filter by is_fast_cash flag (true/false)'
+                                ],
+                                'risk_level' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by risk level: low, medium, high'
+                                ],
+                                'clarity_level' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by clarity level: clear, medium, vague'
+                                ],
+                                'work_type' => [
+                                    'type' => 'string',
+                                    'description' => 'Filter by work type: technical, design, copywriting, marketing, ecommerce, website, project, maintenance, other'
+                                ],
                                 'limit' => [
                                     'type' => 'number',
                                     'description' => 'Maximum number of deals to return'
