@@ -86,7 +86,6 @@ class OpenAIService
     - Format prices clearly: 40€ instead of 40.00
     - Use short date format: 30.11.2025 instead of "30. november 2025"
     - CRITICAL: The number in the header "(X näidatud)" MUST match the actual number of items shown in the bullet list. If you filter out completed tasks, adjust the count accordingly.
-    - Example: If user asks for 20 tasks but only 10 are active after filtering, show: "📋 Ülesanded (10 näidatud)" and "Kokku: 10 ülesannet"
     - ALWAYS add clickable links using this format: [Title](URL)
     * Tasks: [Task name](http://45.93.139.96:8082/tasks/{id})
     * Clients: [Client name](http://45.93.139.96:8082/clients/{id})
